@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inha Counter</title>
+  </head>
+  <body>
+    <h1>Counter: <span id="counter">0</span></h1>
+    <button onclick="countUp()">+1</button>
+    <button onclick="countDown()">-1</button>
+
+    <script>
+      let counter = 0;
+
+      function countUp() {
+        counter++;
+        document.getElementById("counter").textContent = counter;
+      }
+
+      function countDown() {
+        counter--;
+        document.getElementById("counter").textContent = counter;
+      }
+    </script>
+  </body>
+</html>

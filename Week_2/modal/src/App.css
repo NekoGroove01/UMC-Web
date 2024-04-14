@@ -1,0 +1,13 @@
+.App {
+	position: relative;
+	text-align: center;
+	width: 100vw;
+	height: 100vh;
+	padding: 20px;
+	z-index: 0;
+}
+
+button {
+	margin-top: 20px;
+	padding: 10px 20px;
+}

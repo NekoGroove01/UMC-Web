@@ -7,7 +7,7 @@ import LoadingIndicator from "../components/Loading";
 const PageContainer = styled.div`
 	padding: 20px;
 	max-width: 1280px;
-	min-height: calc(100vh - 160px);
+	min-height: 100vh;
 	margin: auto;
 `;
 

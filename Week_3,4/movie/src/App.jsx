@@ -5,6 +5,7 @@ import PopularPage from "./pages/PopularPage";
 import Layout from "./Layout";
 import MovieDetail from "./pages/MovieDetail";
 import NotFound from "./pages/NotFound";
+import SignUp from "./pages/SignUp";
 
 function App() {
 	return (
@@ -29,6 +30,7 @@ function App() {
 						element={<PopularPage names="upcoming" title="Upcoming" />}
 					/>
 					<Route path="/movie/:id" element={<MovieDetail />} />
+					<Route path="/signup" element={<SignUp />} />
 					<Route path="*" element={<NotFound />} />
 				</Route>
 			</Routes>

@@ -58,7 +58,7 @@ const Navbar = () => {
 			<Title to="/">UMC Movie</Title>
 			<NavLinks>
 				<NavLinkContainer onClick={handleLogin}>
-					<NavLink to="/signup">Sign-Up</NavLink>
+					<NavLink to="/signin">SignIn</NavLink>
 				</NavLinkContainer>
 				<NavLinkContainer>
 					<NavLink to="/popular">Popular</NavLink>

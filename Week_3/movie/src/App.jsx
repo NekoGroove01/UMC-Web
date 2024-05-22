@@ -6,6 +6,8 @@ import Layout from "./Layout";
 import MovieDetail from "./pages/MovieDetail";
 import NotFound from "./pages/NotFound";
 import SignUp from "./pages/SignUp";
+import SignIn from "./pages/Signin";
+// import PublicRoute from "./components/PublicRoute";
 
 function App() {
 	return (
@@ -31,6 +33,7 @@ function App() {
 					/>
 					<Route path="/movie/:id" element={<MovieDetail />} />
 					<Route path="/signup" element={<SignUp />} />
+					<Route path="/signin" element={<SignIn />} />
 					<Route path="*" element={<NotFound />} />
 				</Route>
 			</Routes>

@@ -72,10 +72,7 @@ function MainPage() {
 		return () => clearTimeout(delayDebounceFn);
 	}, [searchTerm]);
 
-	useEffect(() => {
-		console.log("Movies: ", movies);
-		console.log(movies.length);
-	}, [movies]);
+	useEffect(() => {}, []);
 
 	const handleSearchChange = (event) => {
 		setSearchTerm(event.target.value);

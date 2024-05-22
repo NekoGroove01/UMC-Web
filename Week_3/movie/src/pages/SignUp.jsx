@@ -2,31 +2,31 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
-const Container = styled.div`
+export const Container = styled.div`
 	width: min(90%, 700px);
 	min-height: 100vh;
 	margin: 0 auto;
 `;
 
-const Title = styled.h2`
+export const Title = styled.h2`
 	text-align: center;
 	margin: 60px 0 30px;
 	font-size: 32px;
 `;
 
-const InputArea = styled.div`
+export const InputArea = styled.div`
 	margin: 10px 0;
 	display: flex;
 	flex-direction: column;
 	gap: 5px;
 `;
 
-const InputText = styled.p`
+export const InputText = styled.p`
 	margin: 0 10px;
 	font-size: 16px;
 `;
 
-const WarningText = styled.p`
+export const WarningText = styled.p`
 	margin: 0 10px;
 	font-size: 12px;
 	color: red;
@@ -34,14 +34,14 @@ const WarningText = styled.p`
 	transition: opacity 0.1s ease-in-out;
 `;
 
-const Input = styled.input`
+export const Input = styled.input`
 	width: 100%;
 	padding: 10px 15px;
 	margin-top: 10px;
 	font-size: 16px;
 `;
 
-const SubmitButton = styled.button`
+export const SubmitButton = styled.button`
 	margin: 20px 0 80px;
 	width: 100%;
 	padding: 10px 0;
@@ -67,12 +67,14 @@ const SubmitButton = styled.button`
 function SignUp() {
 	const navigator = useNavigate();
 	const [name, setName] = useState("");
+	const [id, setId] = useState("");
 	const [email, setEmail] = useState("");
 	const [age, setAge] = useState("");
 	const [password, setPassword] = useState("");
 	const [passwordConfirm, setPasswordConfirm] = useState("");
 	const [errors, setErrors] = useState({
 		name: "",
+		id: "",
 		email: "",
 		age: "",
 		password: "",
@@ -83,6 +85,7 @@ function SignUp() {
 		e.preventDefault();
 		if (
 			name !== "" &&
+			id !== "" &&
 			email !== "" &&
 			age !== "" &&
 			password !== "" &&
@@ -91,8 +94,7 @@ function SignUp() {
 		) {
 			console.log("Form submitted:", { name, email, age, password });
 			// Redirect to the main page
-			navigator("/");
-			alert("You are signed in.");
+			navigator("/signin");
 		}
 	};
 
@@ -104,6 +106,22 @@ function SignUp() {
 			}));
 		} else {
 			setErrors((prevErrors) => ({ ...prevErrors, name: "" }));
+		}
+	};
+
+	const validateId = (value) => {
+		if (!value) {
+			setErrors((prevErrors) => ({
+				...prevErrors,
+				id: "아이디를 입력해주세요.",
+			}));
+		} else if (!/^[a-zA-Z0-9]+$/.test(value)) {
+			setErrors((prevErrors) => ({
+				...prevErrors,
+				id: "아이디는 영어와 숫자로만 이루어져야 합니다.",
+			}));
+		} else {
+			setErrors((prevErrors) => ({ ...prevErrors, id: "" }));
 		}
 	};
 
@@ -200,9 +218,9 @@ function SignUp() {
 	return (
 		<Container>
 			<Title>Sign Up To Our Service</Title>
-			<form onSubmit={handleSubmit}>
+			<div>
 				<InputArea>
-					<InputText>Username</InputText>
+					<InputText>User Name</InputText>
 					<Input
 						type="text"
 						placeholder="Please submit your name..."
@@ -214,6 +232,21 @@ function SignUp() {
 					/>
 					<WarningText show={errors.name === "" ? "False" : "True"}>
 						{errors.name}
+					</WarningText>
+				</InputArea>
+				<InputArea>
+					<InputText>User ID</InputText>
+					<Input
+						type="text"
+						placeholder="Please submit your ID..."
+						value={name}
+						onChange={(e) => {
+							setId(e.target.value);
+							validateId(e.target.value);
+						}}
+					/>
+					<WarningText show={errors.id === "" ? "False" : "True"}>
+						{errors.id}
 					</WarningText>
 				</InputArea>
 				<InputArea>
@@ -284,13 +317,13 @@ function SignUp() {
 						age === "" ||
 						password === "" ||
 						passwordConfirm === "" ||
-						Object.values(errors).some((error) => error !== "")
+						Object.values(errors).some((error) => error !== "") // 여기다가 확인하는 함수
 					}
 					onClick={handleSubmit}
 				>
 					Submit
 				</SubmitButton>
-			</form>
+			</div>
 		</Container>
 	);
 }

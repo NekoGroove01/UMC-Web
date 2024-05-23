@@ -21,6 +21,9 @@ const Banner = styled.div`
 const SearchBarContainer = styled.div`
 	margin: auto;
 	max-width: 500px;
+	@media (max-width: 768px) {
+		max-width: 90%;
+	}
 `;
 
 const SearchInput = styled.input`
@@ -52,9 +55,12 @@ const MovieGrid = styled.div`
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 	grid-gap: 1rem;
+	@media (max-width: 768px) {
+		width: 90%;
+	}
 `;
 
-// MainPage component
+// Rest of the code...
 function MainPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [movies, setMovies] = useState([]);

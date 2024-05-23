@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 
@@ -46,20 +47,71 @@ const NavLinks = styled.div`
 	display: flex;
 `;
 
+const TOKEN_EXPIRY_TIME = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+
+const isTokenValid = () => {
+	const token = localStorage.getItem("token");
+	const tokenTimestamp = localStorage.getItem("tokenTimestamp");
+	if (!token || !tokenTimestamp) return false;
+
+	const currentTime = new Date().getTime();
+	return currentTime - tokenTimestamp < TOKEN_EXPIRY_TIME;
+};
+
 const Navbar = () => {
 	const [loggedIn, setLoggedIn] = useState(false);
+	const [username, setUsername] = useState("");
 
-	const handleLogin = () => {
-		setLoggedIn(!loggedIn);
+	useEffect(() => {
+		if (isTokenValid()) {
+			const token = localStorage.getItem("token");
+			axios
+				.get("http://localhost:8080/auth/me", {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				})
+				.then((response) => {
+					setUsername(response.data.username);
+					setLoggedIn(true);
+				})
+				// eslint-disable-next-line no-unused-vars
+				.catch((_) => {
+					localStorage.removeItem("token");
+					localStorage.removeItem("tokenTimestamp");
+					setLoggedIn(false);
+				});
+		}
+	}, []);
+
+	const handleLogout = () => {
+		localStorage.removeItem("token");
+		localStorage.removeItem("tokenTimestamp");
+		setLoggedIn(false);
+		setUsername("");
 	};
 
 	return (
 		<NavbarContainer>
 			<Title to="/">UMC Movie</Title>
 			<NavLinks>
-				<NavLinkContainer onClick={handleLogin}>
-					<NavLink to="/signin">SignIn</NavLink>
-				</NavLinkContainer>
+				{loggedIn ? (
+					<>
+						<p>Welcome, {username}</p>
+						<NavLinkContainer onClick={handleLogout}>
+							<NavLink to="/">Logout</NavLink>
+						</NavLinkContainer>
+					</>
+				) : (
+					<>
+						<NavLinkContainer>
+							<NavLink to="/signin">SignIn</NavLink>
+						</NavLinkContainer>
+						<NavLinkContainer>
+							<NavLink to="/signup">SignUp</NavLink>
+						</NavLinkContainer>
+					</>
+				)}
 				<NavLinkContainer>
 					<NavLink to="/popular">Popular</NavLink>
 				</NavLinkContainer>

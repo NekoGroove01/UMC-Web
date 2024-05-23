@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -9,6 +9,7 @@ import {
 	SubmitButton,
 	Title,
 } from "./SignUp";
+import axios from "axios";
 
 const WarningText = styled.p`
 	margin: 0 10px;
@@ -31,21 +32,39 @@ const SignupText = styled(NavLink)`
 
 function SignIn() {
 	const navigate = useNavigate();
-	const [email, setEmail] = useState("");
+	const [id, setId] = useState("");
 	const [password, setPassword] = useState("");
 	const [showWarning, setShowWarning] = useState(false);
 
-	useEffect(() => {
-		console.log();
-	}, []);
+	const handleLogin = async () => {
+		if (!checkValidation) {
+			return;
+		}
+		try {
+			const response = await axios.post("http://localhost:8080/auth/login", {
+				id,
+				password,
+			});
+			localStorage.setItem("token", response.data.token);
+			localStorage.setItem("tokenTimestamp", new Date().getTime());
+			alert("Login successful!");
+			navigate("/");
+		} catch (error) {
+			if (error.response && error.response.status === 401) {
+				setShowWarning(true);
+			} else {
+				alert("An error occurred during login");
+			}
+		}
+	};
 
 	// function of checking email and password
-	const handleLogin = () => {
-		if (email === null || password === null) {
+	const checkValidation = () => {
+		if (id === null || password === null) {
 			setShowWarning(true);
 			return;
 		}
-		if (email === email && password === password) {
+		if (id === id && password === password) {
 			navigate("/");
 		} else {
 			setShowWarning(true);
@@ -59,8 +78,8 @@ function SignIn() {
 				<InputText>Email</InputText>
 				<Input
 					type="email"
-					value={email}
-					onChange={(e) => setEmail(e.target.value)}
+					value={id}
+					onChange={(e) => setId(e.target.value)}
 				/>
 			</InputArea>
 			<InputArea>
@@ -74,7 +93,7 @@ function SignIn() {
 			<WarningText show={showWarning}>Invalid email or password</WarningText>
 			<SubmitButton
 				type="submit"
-				disabled={email === "" && password === ""}
+				disabled={id === "" && password === ""}
 				onClick={handleLogin}
 			>
 				Submit

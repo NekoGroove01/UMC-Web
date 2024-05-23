@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -81,7 +82,7 @@ function SignUp() {
 		passwordConfirm: "",
 	});
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		if (
 			name !== "" &&
@@ -93,8 +94,26 @@ function SignUp() {
 			Object.values(errors).every((error) => error === "")
 		) {
 			console.log("Form submitted:", { name, email, age, password });
-			// Redirect to the main page
-			navigator("/signin");
+			try {
+				await axios.post("http://localhost:8080/auth/signup", {
+					name,
+					email,
+					age,
+					id,
+					password,
+					passwordCheck: passwordConfirm,
+				});
+				alert("Signup successful!");
+				navigator("/signin");
+			} catch (error) {
+				if (error.response && error.response.status === 409) {
+					alert("Username already exists");
+				} else if (error.response && error.response.status === 400) {
+					alert("Passwords do not match");
+				} else {
+					alert("An error occurred during signup");
+				}
+			}
 		}
 	};
 

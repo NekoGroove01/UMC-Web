@@ -42,13 +42,13 @@ function SignIn() {
 		}
 		try {
 			const response = await axios.post("http://localhost:8080/auth/login", {
-				id,
+				username: id,
 				password,
 			});
 			localStorage.setItem("token", response.data.token);
 			localStorage.setItem("tokenTimestamp", new Date().getTime());
 			alert("Login successful!");
-			navigate("/");
+			navigate("/", { replace: true });
 		} catch (error) {
 			if (error.response && error.response.status === 401) {
 				setShowWarning(true);

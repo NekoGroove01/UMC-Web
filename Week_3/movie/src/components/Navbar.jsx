@@ -1,7 +1,7 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 
 const NavbarContainer = styled.nav`
 	width: 100%;
@@ -11,6 +11,12 @@ const NavbarContainer = styled.nav`
 	align-items: center;
 	padding: 1rem 2rem;
 	background-color: #333;
+	position: relative;
+
+	@media (max-width: 768px) {
+		justify-content: space-between;
+		padding: 0 1rem;
+	}
 `;
 
 const Title = styled(NavLink)`
@@ -20,6 +26,14 @@ const Title = styled(NavLink)`
 	&:hover {
 		cursor: pointer;
 		color: #fff;
+	}
+`;
+
+const NavLinks = styled.div`
+	display: flex;
+
+	@media (max-width: 768px) {
+		display: none;
 	}
 `;
 
@@ -33,18 +47,77 @@ const NavLinkContainer = styled.div`
 	a {
 		color: white;
 		text-decoration: none;
-		transition: color 0.2s ease-in-out, transform 0.3s ease; // Apply transitions for color and transform
+		transition: color 0.2s ease-in-out, transform 0.3s ease;
 
 		&:hover {
 			cursor: pointer;
-			color: #cccccc; // Lighten the color on hover
-			transform: scale(1.1); // Enlarge the link slightly on hover
+			color: #cccccc;
+			transform: scale(1.1);
 		}
 	}
 `;
 
-const NavLinks = styled.div`
-	display: flex;
+const MenuIcon = styled.div`
+	display: none;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+
+	@media (max-width: 768px) {
+		display: flex;
+	}
+
+	div {
+		width: 25px;
+		height: 3px;
+		background-color: #fff;
+		margin: 4px 0;
+		transition: 0.4s;
+	}
+
+	&.change div:nth-child(1) {
+		transform: rotate(-45deg) translate(-3px, 1px);
+	}
+
+	&.change div:nth-child(2) {
+		opacity: 0;
+	}
+
+	&.change div:nth-child(3) {
+		transform: rotate(45deg) translate(-3px, -1px);
+	}
+`;
+
+const Sidebar = styled.div`
+	height: 100%;
+	width: 250px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	background-color: #111;
+	overflow-x: hidden;
+	transform: translateX(-100%);
+	transition: transform 0.3s ease-in-out;
+	z-index: 1;
+	padding-top: 60px;
+
+	&.open {
+		transform: translateX(0);
+	}
+
+	a {
+		padding: 8px 8px 8px 32px;
+		text-decoration: none;
+		font-size: 25px;
+		color: #818181;
+		display: block;
+		transition: 0.3s;
+
+		&:hover {
+			color: #f1f1f1;
+		}
+	}
 `;
 
 const TOKEN_EXPIRY_TIME = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
@@ -61,17 +134,20 @@ const isTokenValid = () => {
 const Navbar = () => {
 	const [loggedIn, setLoggedIn] = useState(false);
 	const [username, setUsername] = useState("");
+	const [sidebarOpen, setSidebarOpen] = useState(false);
+	const location = useLocation().pathname === "/";
 
 	useEffect(() => {
-		if (isTokenValid()) {
+		const getToken = async () => {
 			const token = localStorage.getItem("token");
-			axios
+			await axios
 				.get("http://localhost:8080/auth/me", {
 					headers: {
 						Authorization: `Bearer ${token}`,
 					},
 				})
 				.then((response) => {
+					console.log(response);
 					setUsername(response.data.username);
 					setLoggedIn(true);
 				})
@@ -81,14 +157,21 @@ const Navbar = () => {
 					localStorage.removeItem("tokenTimestamp");
 					setLoggedIn(false);
 				});
+		};
+		if (isTokenValid()) {
+			getToken();
 		}
-	}, []);
+	}, [location]);
 
 	const handleLogout = () => {
 		localStorage.removeItem("token");
 		localStorage.removeItem("tokenTimestamp");
 		setLoggedIn(false);
 		setUsername("");
+	};
+
+	const toggleSidebar = () => {
+		setSidebarOpen(!sidebarOpen);
 	};
 
 	return (
@@ -125,6 +208,49 @@ const Navbar = () => {
 					<NavLink to="/upcoming">Up Coming</NavLink>
 				</NavLinkContainer>
 			</NavLinks>
+			<MenuIcon className={sidebarOpen ? "change" : ""} onClick={toggleSidebar}>
+				<div></div>
+				<div></div>
+				<div></div>
+			</MenuIcon>
+			<Sidebar className={sidebarOpen ? "open" : ""}>
+				{loggedIn ? (
+					<>
+						<NavLink onClick={toggleSidebar} to="/">
+							Welcome, {username}
+						</NavLink>
+						<NavLinkContainer
+							onClick={() => {
+								handleLogout();
+								toggleSidebar();
+							}}
+						>
+							<NavLink to="/">Logout</NavLink>
+						</NavLinkContainer>
+					</>
+				) : (
+					<>
+						<NavLink onClick={toggleSidebar} to="/signin">
+							SignIn
+						</NavLink>
+						<NavLink onClick={toggleSidebar} to="/signup">
+							SignUp
+						</NavLink>
+					</>
+				)}
+				<NavLink onClick={toggleSidebar} to="/popular">
+					Popular
+				</NavLink>
+				<NavLink onClick={toggleSidebar} to="/nowplaying">
+					Now Playing
+				</NavLink>
+				<NavLink onClick={toggleSidebar} to="/toprated">
+					Top Rated
+				</NavLink>
+				<NavLink onClick={toggleSidebar} to="/upcoming">
+					Up Coming
+				</NavLink>
+			</Sidebar>
 		</NavbarContainer>
 	);
 };

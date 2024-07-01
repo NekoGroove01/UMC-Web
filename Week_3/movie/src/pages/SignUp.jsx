@@ -93,14 +93,20 @@ function SignUp() {
 			passwordConfirm !== "" &&
 			Object.values(errors).every((error) => error === "")
 		) {
-			console.log("Form submitted:", { name, email, age, password });
+			console.log("Form submitted:", {
+				name,
+				email,
+				age,
+				password,
+				passwordConfirm,
+			});
 			try {
 				await axios.post("http://localhost:8080/auth/signup", {
-					name,
-					email,
-					age,
-					id,
-					password,
+					name: name,
+					email: email,
+					age: age,
+					username: id,
+					password: password,
 					passwordCheck: passwordConfirm,
 				});
 				alert("Signup successful!");
@@ -110,6 +116,7 @@ function SignUp() {
 					alert("Username already exists");
 				} else if (error.response && error.response.status === 400) {
 					alert("Passwords do not match");
+					console.log(error);
 				} else {
 					alert("An error occurred during signup");
 				}
@@ -258,7 +265,7 @@ function SignUp() {
 					<Input
 						type="text"
 						placeholder="Please submit your ID..."
-						value={name}
+						value={id}
 						onChange={(e) => {
 							setId(e.target.value);
 							validateId(e.target.value);

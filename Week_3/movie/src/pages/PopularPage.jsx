@@ -130,7 +130,6 @@ const PopularPage = ({ names, title }) => {
 				) {
 					return;
 				} // 화면 맨 아래가 아니거나 로딩 중이면 무시
-				console.log(currentPage);
 				setCurrentPage((prevPage) => prevPage + 1); // 다음 페이지의 데이터를 받아옴
 			};
 
